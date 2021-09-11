@@ -32,7 +32,7 @@ import prdb
 prdb.set_signal_handler(host="0.0.0.0", port=8080)
 ```
 
-https://github.com/yoogottamk/prdb/blob/master/media/demo.mp4?raw=true
+https://github.com/yoogottamk/prdb/raw/master/media/demo.mp4
 
 ## How does it work?
 `prdb` basically installs a signal handler. When the signal is given, it forks the process and starts an interpreter in the child. The parent starts an http server and communicates with the web frontend with `WebSockets` and the interpreter.
