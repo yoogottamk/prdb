@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>prdb python console</title>
+    <link rel="stylesheet"
+      href="https://unpkg.com/xterm@4.12.0/css/xterm.css"/>
+    <style>
+      body {
+        height: 95vh;
+      }
+      #terminal {
+        height: calc(100% - 50px);
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 100%; height: calc(100% - 50px)" id="terminal"></div>
+    <script src="https://unpkg.com/xterm@4.12.0/lib/xterm.js"></script>
+    <script src="https://unpkg.com/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
+    <script src="https://unpkg.com/xterm-addon-web-links@0.4.0/lib/xterm-addon-web-links.js"></script>
+    <script src="https://unpkg.com/xterm-addon-search@0.8.0/lib/xterm-addon-search.js"></script>
+
+    <script>
+      const ws_host = window.location.origin.replace("http", "ws"),
+        ws = new WebSocket(`${ws_host}/ws/connect?fd={{fd}}`),
+        term = new Terminal({
+          cursorBlink: true,
+          scrollback: true,
+          fontSize: 18,
+        }),
+        fit = new FitAddon.FitAddon();
+
+      term.loadAddon(fit);
+      term.loadAddon(new WebLinksAddon.WebLinksAddon());
+      term.loadAddon(new SearchAddon.SearchAddon());
+
+      term.open(document.getElementById("terminal"));
+      fit.fit();
+
+      ws.onmessage = event => term.write(JSON.parse(event.data).output);
+      ws.onclose = event => console.log("WebSocket connection closed");
+
+      term.onData(data => ws.send(JSON.stringify({input: data})));
+
+      window.onresize = () => fit.fit();
+    </script>
+  </body>
+</html>
